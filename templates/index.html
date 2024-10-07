@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="number"], select {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Using ML Models</h1>
+        <form id="predictionForm">
+            <label for="school">School:</label>
+            <select id="school" name="school">
+                <option value="1">GP (Gabriel Pereira)</option>
+                <option value="0">MS (Mousinho da Silveira)</option>
+            </select>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+            </select>
+
+            <label for="traveltime">Travel Time (1-4 hours):</label>
+            <input type="number" id="traveltime" name="traveltime" min="1" max="4" step="1" required>
+
+            <label for="schoolsup">School Support:</label>
+            <select id="schoolsup" name="schoolsup">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+
+            <label for="famsup">Family Support:</label>
+            <select id="famsup" name="famsup">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+
+            <label for="famrel">Family Relations (1-5):</label>
+            <input type="number" id="famrel" name="famrel" min="1" max="5" step="1" required>
+
+            <label for="goout">Going Out (1-5):</label>
+            <input type="number" id="goout" name="goout" min="1" max="5" step="1" required>
+
+            <label for="health">Health (1-5):</label>
+            <input type="number" id="health" name="health" min="1" max="5" step="1" required>
+
+            <label for="absences">Absences (0-93):</label>
+            <input type="number" id="absences" name="absences" min="0" max="93" step="1" required>
+
+            <label for="G1">G1 (0-20):</label>
+            <input type="number" id="G1" name="G1" min="0" max="20" step="1" required>
+
+            <label for="G2">G2 (0-20):</label>
+            <input type="number" id="G2" name="G2" min="0" max="20" step="1" required>
+
+            <input type="submit" value="Predict">
+        </form>
+
+        <!-- Div để hiển thị kết quả dự đoán -->
+        <div class="result" id="result" style="display:none;">
+            <h3>Prediction Results:</h3>
+            <p id="linearModel"></p>
+            <p id="ridgeModel"></p>
+            <p id="mlpModel"></p>
+            <p id="stackingModel"></p>
+            <p id="baggingModel"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Ngăn form reload trang
+
+            // Lấy dữ liệu từ form
+            const formData = new FormData(this);
+
+            // Chuẩn bị dữ liệu để gửi đến API
+            const formObj = Object.fromEntries(formData.entries());
+
+            // Gửi request POST tới server để dự đoán
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObj),
+            });
+
+            // Nhận kết quả dự đoán
+            const result = await response.json();
+
+            // Hiển thị kết quả dưới form
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('linearModel').innerText = 'Linear Model Prediction: ' + result.linear;
+            document.getElementById('ridgeModel').innerText = 'Ridge Model Prediction: ' + result.ridge;
+            document.getElementById('mlpModel').innerText = 'MLP Model Prediction: ' + result.mlp;
+            document.getElementById('stackingModel').innerText = 'Stacking Model Prediction: ' + result.stacking;
+            document.getElementById('baggingModel').innerText = 'Bagging Model Prediction: ' + result.bagging;
+        });
+    </script>
+</body>
+</html>
